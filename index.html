@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Oneiros - Interpretación de Sueños</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400;700&display=swap');
+      
+      body {
+        font-family: 'Lato', sans-serif;
+        background-color: #050505;
+        color: #e2e8f0;
+      }
+      
+      h1, h2, h3, h4, h5, h6 {
+        font-family: 'Cinzel', serif;
+      }
+
+      /* Custom scrollbar for a cleaner look */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #0f0f15; 
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #2d2d3a; 
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #434356; 
+      }
+
+      .markdown-body p {
+        margin-bottom: 1rem;
+        line-height: 1.8;
+        color: #cbd5e1;
+      }
+      .markdown-body strong {
+        color: #e9d5ff;
+        font-weight: 700;
+      }
+      
+      /* DISTINCT SUBTITLES FOR DREAM ANALYSIS */
+      .markdown-body h3 {
+        font-family: 'Cinzel', serif;
+        font-size: 1.4rem;
+        font-weight: 700; /* Bold weight */
+        color: #f3e8ff; /* Very light purple */
+        margin-top: 2.5rem;
+        margin-bottom: 1.2rem;
+        border-bottom: 1px solid rgba(168, 85, 247, 0.3);
+        padding-bottom: 0.5rem;
+        letter-spacing: 0.08em;
+        text-shadow: 0 0 15px rgba(192, 132, 252, 0.3);
+      }
+      
+      /* SURREAL LIST STYLES */
+      .markdown-body ul {
+        list-style-type: none; /* Remove default disc */
+        padding-left: 0.5rem;
+        margin-bottom: 1.5rem;
+      }
+      
+      .markdown-body li {
+        position: relative;
+        padding-left: 1.8rem;
+        margin-bottom: 0.8rem;
+        line-height: 1.7;
+        color: #d1d5db;
+      }
+
+      .markdown-body li::before {
+        content: '✦'; /* Surreal Star Icon */
+        position: absolute;
+        left: 0;
+        top: 2px;
+        color: #d8b4fe; /* Purple-300 */
+        font-size: 0.9rem;
+        text-shadow: 0 0 5px rgba(216, 180, 254, 0.4);
+        animation: twinkle 3s infinite ease-in-out;
+      }
+
+      /* Randomize twinkling for natural star effect */
+      .markdown-body li:nth-child(odd)::before {
+        animation-duration: 4s;
+        animation-delay: 0.2s;
+      }
+      
+      .markdown-body li:nth-child(even)::before {
+        animation-duration: 2.5s;
+        animation-delay: 0.8s;
+      }
+      
+      .markdown-body li:nth-child(3n)::before {
+         animation-duration: 5s;
+         color: #e9d5ff;
+         text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+      }
+
+      @keyframes twinkle {
+        0% { opacity: 0.4; transform: scale(0.8); text-shadow: 0 0 2px rgba(216, 180, 254, 0.2); }
+        50% { opacity: 1; transform: scale(1.1); text-shadow: 0 0 10px rgba(216, 180, 254, 0.9); }
+        100% { opacity: 0.4; transform: scale(0.8); text-shadow: 0 0 2px rgba(216, 180, 254, 0.2); }
+      }
+
+      /* ETHEREAL PROGRESS ANIMATIONS */
+      @keyframes nebulaFlow {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+
+      .dream-progress-bg {
+        background: linear-gradient(90deg, #581c87, #a855f7, #ec4899, #6366f1, #581c87);
+        background-size: 300% 100%;
+        animation: nebulaFlow 3s linear infinite;
+        box-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
+      }
+
+      @keyframes floatUp {
+        0% { transform: translateY(0) scale(0.5); opacity: 0; }
+        50% { opacity: 0.8; }
+        100% { transform: translateY(-20px) scale(1.2); opacity: 0; }
+      }
+
+      .particle {
+        position: absolute;
+        border-radius: 50%;
+        background: white;
+        pointer-events: none;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0",
+    "react-markdown": "https://aistudiocdn.com/react-markdown@^10.1.0"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>

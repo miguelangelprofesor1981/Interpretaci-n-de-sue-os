@@ -1,0 +1,7 @@
+{
+  "name": "Oneiros - Interpretación de Sueños",
+  "description": "Una experiencia surrealista para el análisis de sueños utilizando inteligencia artificial avanzada, psicología y metafísica.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
