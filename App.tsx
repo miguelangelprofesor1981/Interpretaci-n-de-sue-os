@@ -95,6 +95,10 @@ const DreamJournal: React.FC<{ user: UserProfile }> = ({ user }) => {
   const audioContextRef = useRef<AudioContext | null>(null);
   const audioSourceRef = useRef<AudioBufferSourceNode | null>(null);
 
+  // Speech Recognition State
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
+
   // Cleanup audio on unmount
   useEffect(() => {
     return () => {
@@ -104,8 +108,55 @@ const DreamJournal: React.FC<{ user: UserProfile }> = ({ user }) => {
       if (audioContextRef.current) {
         audioContextRef.current.close();
       }
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
     };
   }, []);
+
+  const toggleMic = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    
+    if (!SpeechRecognition) {
+      alert("Tu navegador no soporta la narración por voz.");
+      return;
+    }
+
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'es-ES';
+    recognition.continuous = true;
+    recognition.interimResults = true;
+
+    recognition.onstart = () => setIsListening(true);
+    recognition.onend = () => setIsListening(false);
+    recognition.onerror = (event: any) => {
+        console.error("Speech Recognition Error", event);
+        setIsListening(false);
+    };
+
+    let initialText = dream.dreamText; 
+
+    recognition.onresult = (event: any) => {
+      let transcript = '';
+      for (let i = 0; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+      }
+      // Append transcript to what was there when we started listening
+      // To avoid overwriting manual edits made *during* speech (though rare), 
+      // we use the captured initialText.
+      const newText = initialText + (initialText && transcript ? ' ' : '') + transcript;
+      setDream(prev => ({ ...prev, dreamText: newText }));
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
+  };
 
   const handleAnalyze = async () => {
     if (!dream.dreamText) return;
@@ -328,19 +379,44 @@ const DreamJournal: React.FC<{ user: UserProfile }> = ({ user }) => {
             </div>
 
             <div className="space-y-2">
-                <label className="text-xs font-bold tracking-widest text-purple-400/70 uppercase ml-1">La Narración</label>
+                <div className="flex justify-between items-center">
+                    <label className="text-xs font-bold tracking-widest text-purple-400/70 uppercase ml-1">La Narración</label>
+                </div>
                 <div className="relative group/input">
-                    {!dream.dreamText && (
+                    {!dream.dreamText && !isListening && (
                         <div className="absolute inset-0 flex flex-col items-center justify-center text-indigo-300/20 pointer-events-none transition-opacity duration-300">
                             <span className="text-5xl mb-2 opacity-50 filter blur-[0.5px] animate-pulse">👁️</span>
                             <span className="text-sm font-serif italic tracking-wider">Cierra los ojos y relata tu visión...</span>
                         </div>
                     )}
                     <textarea 
-                      className="w-full h-48 bg-indigo-950/20 border border-white/5 rounded-xl p-4 text-lg text-gray-200 focus:bg-indigo-950/40 focus:border-purple-500/30 transition-all resize-none focus:ring-0 outline-none shadow-inner z-10 relative bg-transparent"
+                      className={`w-full h-48 bg-indigo-950/20 border rounded-xl p-4 text-lg text-gray-200 focus:bg-indigo-950/40 transition-all resize-none focus:ring-0 outline-none shadow-inner z-10 relative bg-transparent ${
+                        isListening ? 'border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.2)]' : 'border-white/5 focus:border-purple-500/30'
+                      }`}
                       value={dream.dreamText}
                       onChange={e => setDream({...dream, dreamText: e.target.value})}
                     />
+                    {/* Mic Button */}
+                    <button 
+                        onClick={toggleMic}
+                        className={`absolute bottom-4 right-4 z-20 p-2 rounded-full transition-all duration-300 backdrop-blur-md border ${
+                           isListening 
+                           ? 'bg-red-500/20 text-red-400 border-red-500/50 animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.5)]' 
+                           : 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10 hover:text-purple-300'
+                        }`}
+                        title={isListening ? "Detener narración" : "Narrar por voz"}
+                    >
+                        {isListening ? (
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
+                            </svg>
+                        ) : (
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                            </svg>
+                        )}
+                    </button>
                 </div>
             </div>
             
